@@ -26,7 +26,7 @@
 
         .festive-font { font-family: 'Noto Serif TC', serif; }
 
-        /* Entry Screen Overlay */
+        /* Entry Screen */
         #entry-screen {
             position: fixed;
             inset: 0;
@@ -60,7 +60,7 @@
             100% { transform: scale(1); }
         }
 
-        /* Grid Layout */
+        /* Grid */
         .envelope-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
@@ -70,7 +70,6 @@
             padding: 20px;
         }
 
-        /* Basic Envelope Style */
         .envelope-item {
             aspect-ratio: 3/4;
             background: var(--red);
@@ -107,28 +106,28 @@
         #stage-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.92);
             display: none;
             z-index: 100;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-end; /* 把紅包袋放在下方，預留上方空間 */
             flex-direction: column;
-            padding: 20px;
+            padding-bottom: 15vh; /* 底部墊高，讓卡片彈出在中央 */
         }
 
-        /* 3D Envelope Animation - Adjusted for HUGE effect but mobile safe */
+        /* 3D Envelope Container */
         .big-envelope {
-            width: min(90vw, 450px);
-            height: min(70vh, 600px);
+            width: min(85vw, 400px);
+            height: min(50vh, 480px);
             background: var(--red);
             position: relative;
             border-radius: 15px;
             transform-style: preserve-3d;
             box-shadow: 0 30px 60px rgba(0,0,0,1);
-            margin-top: 50px; /* Leave space for card popping up */
+            transition: transform 0.5s ease;
         }
 
-        /* The Flap (Top Part) */
+        /* The Flap */
         .flap {
             position: absolute;
             top: 0;
@@ -139,8 +138,8 @@
             border: 3px solid var(--gold);
             border-radius: 15px 15px 0 0;
             transform-origin: top;
-            z-index: 3;
-            transition: transform 0.8s ease-in-out;
+            z-index: 30; /* 關閉時在最前 */
+            transition: transform 0.8s ease-in-out, opacity 0.5s ease 0.3s, z-index 0s linear 0.4s;
             display: flex;
             align-items: flex-end;
             justify-content: center;
@@ -148,35 +147,55 @@
         }
 
         .big-envelope.open .flap {
-            transform: rotateX(160deg);
+            transform: rotateX(170deg); /* 翻轉更徹底 */
+            opacity: 0.2; /* 開啟後變透明，避免擋住視線 */
+            z-index: 1; /* 降級到背後 */
         }
 
-        /* The Card inside - Adjusted height and animation */
+        /* The Card inside */
         .greeting-card {
             position: absolute;
-            bottom: 10px;
-            left: 10px;
-            right: 10px;
-            height: calc(100% - 20px);
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            height: calc(100% - 40px);
             background: var(--paper);
-            border-radius: 8px;
-            z-index: 2;
-            transition: transform 0.8s ease-in-out 0.4s;
+            border-radius: 12px;
+            z-index: 5; /* 初始在袋內 */
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.4s, z-index 0s linear 0.4s;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 30px;
+            padding: 40px 20px;
             text-align: center;
             color: var(--dark-red);
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.1);
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.1), 0 10px 40px rgba(0,0,0,0.4);
+            border: 2px solid var(--gold);
         }
 
         .big-envelope.open .greeting-card {
-            transform: translateY(-40%); /* Pops up significantly */
+            transform: translateY(-110%); /* 彈出得更遠 */
+            z-index: 100; /* 絕對置頂 */
         }
 
-        /* Decorative Elements */
+        /* Front Cover */
+        .front-cover {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 55%;
+            background: var(--red);
+            border: 3px solid var(--gold);
+            border-radius: 0 0 15px 15px;
+            z-index: 20; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Decorative Lanterns */
         .bg-lantern {
             position: fixed;
             top: -20px;
@@ -190,12 +209,11 @@
             to { transform: rotate(5deg); }
         }
 
-        /* Audio Control Button */
         #music-toggle {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            z-index: 50;
+            z-index: 150;
             background: rgba(212, 0, 0, 0.8);
             border: 2px solid var(--gold);
             color: var(--gold);
@@ -212,7 +230,6 @@
 </head>
 <body class="flex flex-col items-center py-10">
 
-    <!-- Entry Screen Overlay -->
     <div id="entry-screen">
         <div class="text-center mb-8 px-4">
             <div class="mb-6 flex justify-center">
@@ -227,69 +244,50 @@
                 點擊開啟馬年好運 🧧
             </button>
         </div>
-        <p class="absolute bottom-10 opacity-60 text-sm text-gold">點擊按鈕後將開始播放節慶背景音樂</p>
     </div>
 
-    <!-- BGM Audio Element -->
     <audio id="bgm" loop>
         <source src="https://cdn.pixabay.com/download/audio/2026/01/14/audio_3265c1aace.mp3?filename=viacheslavstarostin-chinese-lunar-new-year-465871.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- SFX Elements -->
-    <audio id="sfx-click" preload="auto">
-        <source src="https://cdn.pixabay.com/download/audio/2022/03/24/audio_30dda4adf4.mp3?filename=freesound_community-paper-plane-blow-100032.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="sfx-open" preload="auto">
-        <source src="https://cdn.pixabay.com/download/audio/2022/03/17/audio_ac64c14ad7.mp3?filename=freesound_community-papercrackle1-94430.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="sfx-success" preload="auto">
-        <source src="https://cdn.pixabay.com/download/audio/2025/11/19/audio_653dfff9ab.mp3?filename=dragon-studio-festive-chime-439612.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="sfx-reset" preload="auto">
-        <source src="https://cdn.pixabay.com/download/audio/2025/08/02/audio_e87ddb7db2.mp3?filename=virtual_vibes-minimal-ui-pop-383735.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="sfx-click" preload="auto"><source src="https://cdn.pixabay.com/download/audio/2022/03/24/audio_30dda4adf4.mp3?filename=freesound_community-paper-plane-blow-100032.mp3" type="audio/mpeg"></audio>
+    <audio id="sfx-open" preload="auto"><source src="https://cdn.pixabay.com/download/audio/2022/03/17/audio_ac64c14ad7.mp3?filename=freesound_community-papercrackle1-94430.mp3" type="audio/mpeg"></audio>
+    <audio id="sfx-success" preload="auto"><source src="https://cdn.pixabay.com/download/audio/2025/11/19/audio_653dfff9ab.mp3?filename=dragon-studio-festive-chime-439612.mp3" type="audio/mpeg"></audio>
+    <audio id="sfx-reset" preload="auto"><source src="https://cdn.pixabay.com/download/audio/2025/08/02/audio_e87ddb7db2.mp3?filename=virtual_vibes-minimal-ui-pop-383735.mp3" type="audio/mpeg"></audio>
 
-    <!-- Music Toggle Button -->
     <button id="music-toggle" onclick="toggleMusic()">
         <svg id="music-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
         </svg>
     </button>
 
-    <!-- Decorative Lanterns -->
     <img src="https://img.icons8.com/color/96/chinese-lantern.png" class="bg-lantern" style="left: 5%;" alt="Lantern">
     <img src="https://img.icons8.com/color/96/chinese-lantern.png" class="bg-lantern" style="right: 5%;" alt="Lantern">
 
     <header class="text-center mb-10 px-4 relative z-10">
-        <h1 class="festive-font text-5xl md:text-6xl mb-4 tracking-widest drop-shadow-lg text-gold">
-            丙午馬年．開運大抽獎
-        </h1>
+        <h1 class="festive-font text-5xl md:text-6xl mb-4 tracking-widest drop-shadow-lg text-gold">丙午馬年．開運大抽獎</h1>
         <p class="text-xl text-white opacity-90">這裡有 32 個福氣紅包，選一個開啟您的一年好運！</p>
     </header>
 
-    <!-- 32 Envelopes Grid -->
-    <div id="grid-container" class="envelope-grid relative z-10">
-        <!-- JS generates 32 items -->
-    </div>
+    <div id="grid-container" class="envelope-grid relative z-10"></div>
 
-    <!-- Animation Stage -->
     <div id="stage-overlay">
         <div id="big-envelope-wrapper" class="big-envelope">
             <div class="flap">
                 <div class="w-16 h-16 rounded-full border-2 border-[#FFD700] flex items-center justify-center text-[#FFD700] text-xl font-bold bg-[#D40000]">福</div>
             </div>
             <div class="greeting-card">
-                <div class="text-base font-bold text-gray-400 mb-4">2026 馬年大吉</div>
-                <div id="result-text" class="text-3xl md:text-4xl font-bold festive-font mb-8 leading-relaxed text-[#8B0000]">
-                    吉祥話載入中...
+                <div class="text-base font-bold text-gray-400 mb-6">2026 馬年大吉</div>
+                <div id="result-text" class="text-4xl md:text-5xl font-bold festive-font mb-10 leading-relaxed text-[#8B0000]">
+                    吉祥話
                 </div>
-                <div class="w-24 h-1 bg-red-200 mb-8"></div>
-                <button onclick="resetGame()" class="bg-[#D40000] text-white px-8 py-3 rounded-full font-bold text-lg hover:bg-black transition-all shadow-lg">
+                <div class="w-24 h-1 bg-red-200 mb-10"></div>
+                <button onclick="resetGame()" class="bg-[#D40000] text-white px-12 py-4 rounded-full font-bold text-xl hover:bg-black transition-all shadow-xl active:scale-95">
                     收下祝福
                 </button>
             </div>
-            <div class="absolute bottom-0 left-0 w-full h-1/2 bg-[#D40000] border-2 border-[#FFD700] rounded-b-lg z-10 flex items-center justify-center">
-                <span class="text-gold opacity-20 text-6xl">🐎</span>
+            <div class="front-cover">
+                <span class="text-gold opacity-20 text-7xl">🐎</span>
             </div>
         </div>
     </div>
@@ -318,27 +316,20 @@
         let bgmStarted = false;
         let wasPlayingBeforeHidden = false;
 
-        // Initialize 32 Envelopes
         const grid = document.getElementById('grid-container');
         for (let i = 0; i < 32; i++) {
             const el = document.createElement('div');
             el.className = 'envelope-item';
-            el.innerHTML = `
-                <div class="absolute inset-0 opacity-10 flex items-center justify-center pointer-events-none">
-                    <svg width="60" height="60" viewBox="0 0 100 100" fill="gold"><path d="M20,80 Q30,40 60,30 Q80,20 90,10 L85,40 Q70,50 60,80 Z"></path></svg>
-                </div>
-                <div class="seal">福</div>
-            `;
+            el.innerHTML = `<div class="seal">福</div>`;
             el.onclick = () => openRedEnvelope();
             grid.appendChild(el);
         }
 
         function startApp() {
             const entryScreen = document.getElementById('entry-screen');
-            bgm.play().catch(e => console.log("BGM play prevented:", e));
+            bgm.play().catch(e => console.log(e));
             bgmStarted = true;
             updateMusicIcon();
-            sfxClick.currentTime = 0;
             sfxClick.play();
             entryScreen.style.opacity = '0';
             setTimeout(() => { entryScreen.style.visibility = 'hidden'; }, 800);
@@ -349,40 +340,29 @@
                 wasPlayingBeforeHidden = !bgm.paused;
                 if (wasPlayingBeforeHidden) bgm.pause();
             } else {
-                if (wasPlayingBeforeHidden && bgmStarted) bgm.play().catch(e => console.log("Resume failed:", e));
+                if (wasPlayingBeforeHidden && bgmStarted) bgm.play().catch(e => console.log(e));
             }
             updateMusicIcon();
         });
 
         function openRedEnvelope() {
-            if (!bgmStarted) {
-                bgm.play().catch(e => console.log("BGM play prevented:", e));
-                bgmStarted = true;
-                updateMusicIcon();
-            }
-            sfxClick.currentTime = 0;
-            sfxClick.play();
+            if (!bgmStarted) { bgm.play(); bgmStarted = true; updateMusicIcon(); }
+            sfxClick.currentTime = 0; sfxClick.play();
             const overlay = document.getElementById('stage-overlay');
             const envelope = document.getElementById('big-envelope-wrapper');
             const resultText = document.getElementById('result-text');
-            const pick = greetings[Math.floor(Math.random() * greetings.length)];
-            resultText.innerText = pick;
+            resultText.innerText = greetings[Math.floor(Math.random() * greetings.length)];
             overlay.style.display = 'flex';
             setTimeout(() => {
-                sfxOpen.currentTime = 0;
-                sfxOpen.play();
+                sfxOpen.currentTime = 0; sfxOpen.play();
                 envelope.classList.add('open');
                 createConfetti();
-                setTimeout(() => {
-                    sfxSuccess.currentTime = 0;
-                    sfxSuccess.play();
-                }, 400);
+                setTimeout(() => { sfxSuccess.currentTime = 0; sfxSuccess.play(); }, 400);
             }, 100);
         }
 
         function resetGame() {
-            sfxReset.currentTime = 0;
-            sfxReset.play();
+            sfxReset.currentTime = 0; sfxReset.play();
             const overlay = document.getElementById('stage-overlay');
             const envelope = document.getElementById('big-envelope-wrapper');
             envelope.classList.remove('open');
@@ -390,8 +370,7 @@
         }
 
         function toggleMusic() {
-            if (bgm.paused) bgm.play().catch(e => console.log("Toggle play failed:", e));
-            else bgm.pause();
+            if (bgm.paused) bgm.play(); else bgm.pause();
             updateMusicIcon();
         }
 
@@ -406,27 +385,21 @@
 
         function createConfetti() {
             const colors = ['#FFD700', '#FFFFFF', '#FF4D4D', '#FFF8E1'];
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < 60; i++) {
                 const div = document.createElement('div');
                 div.style.position = 'fixed';
-                div.style.left = '50vw';
-                div.style.top = '50vh';
-                div.style.width = '10px';
-                div.style.height = '10px';
+                div.style.left = '50vw'; div.style.top = '40vh'; 
+                div.style.width = '12px'; div.style.height = '12px';
                 div.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                div.style.zIndex = '200';
-                div.style.pointerEvents = 'none';
+                div.style.zIndex = '200'; div.style.pointerEvents = 'none';
                 document.body.appendChild(div);
                 const angle = Math.random() * Math.PI * 2;
-                const tx = Math.cos(angle) * (100 + Math.random() * 200);
-                const ty = Math.sin(angle) * (100 + Math.random() * 200);
+                const tx = Math.cos(angle) * (150 + Math.random() * 250);
+                const ty = Math.sin(angle) * (150 + Math.random() * 250);
                 const animation = div.animate([
-                    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
-                ], {
-                    duration: 1000 + Math.random() * 1000,
-                    easing: 'cubic-bezier(0.16, 1, 0.3, 1)'
-                });
+                    { transform: 'translate(0, 0) scale(1) rotate(0deg)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0) rotate(${Math.random()*360}deg)`, opacity: 0 }
+                ], { duration: 1200 + Math.random() * 1000, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' });
                 animation.onfinish = () => div.remove();
             }
         }
