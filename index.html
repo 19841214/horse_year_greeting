@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 馬年開運抽紅包 - 32 喜氣大放送</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red: #D40000;
+            --gold: #FFD700;
+            --dark-red: #8B0000;
+            --paper: #FFF8E1;
+        }
+
+        body {
+            background-color: #8B0000;
+            background-image: radial-gradient(rgba(255, 215, 0, 0.15) 1px, transparent 1px);
+            background-size: 30px 30px;
+            font-family: 'Noto Sans TC', sans-serif;
+            color: var(--gold);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .festive-font { font-family: 'Noto Serif TC', serif; }
+
+        /* Entry Screen Overlay */
+        #entry-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--red);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease, visibility 0.8s;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 30c0-16.569 13.431-30 30-30v60c-16.569 0-30-13.431-30-30zM0 30c0 16.569 13.431 30 30 30V0C13.431 0 0 13.431 0 30z' fill='%238B0000' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
+        .entry-button {
+            background: var(--gold);
+            color: var(--dark-red);
+            padding: 1rem 3rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-radius: 9999px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 4px solid var(--paper);
+            animation: pulse 2s infinite;
+        }
+
+        .entry-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Grid Layout */
+        .envelope-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+        }
+
+        /* Basic Envelope Style */
+        .envelope-item {
+            aspect-ratio: 3/4;
+            background: var(--red);
+            border: 2px solid var(--gold);
+            border-radius: 8px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .envelope-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .envelope-item .seal {
+            font-size: 24px;
+            color: var(--gold);
+            font-weight: bold;
+            border: 2px solid var(--gold);
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        /* Animation Stage */
+        #stage-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        /* 3D Envelope Animation */
+        .big-envelope {
+            width: 280px;
+            height: 380px;
+            background: var(--red);
+            position: relative;
+            border-radius: 10px;
+            transform-style: preserve-3d;
+            box-shadow: 0 20px 50px rgba(0,0,0,1);
+        }
+
+        /* The Flap (Top Part) */
+        .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: var(--red);
+            border: 2px solid var(--gold);
+            border-radius: 10px 10px 0 0;
+            transform-origin: top;
+            z-index: 3;
+            transition: transform 0.8s ease-in-out;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 20px;
+        }
+
+        .big-envelope.open .flap {
+            transform: rotateX(160deg);
+        }
+
+        /* The Card inside */
+        .greeting-card {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            height: 340px;
+            background: var(--paper);
+            border-radius: 5px;
+            z-index: 2;
+            transition: transform 0.8s ease-in-out 0.4s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            color: var(--dark-red);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .big-envelope.open .greeting-card {
+            transform: translateY(-120px);
+        }
+
+        /* Decorative Elements */
+        .bg-lantern {
+            position: fixed;
+            top: -20px;
+            width: 80px;
+            animation: swing 3s ease-in-out infinite alternate;
+            z-index: 1;
+        }
+
+        @keyframes swing {
+            from { transform: rotate(-5deg); }
+            to { transform: rotate(5deg); }
+        }
+
+        /* Audio Control Button */
+        #music-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 50;
+            background: rgba(212, 0, 0, 0.8);
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center py-10">
+
+    <!-- Entry Screen Overlay -->
+    <div id="entry-screen">
+        <div class="text-center mb-8 px-4">
+            <div class="mb-6 flex justify-center">
+                <svg width="120" height="120" viewBox="0 0 100 100" fill="gold">
+                    <path d="M20,80 Q30,40 60,30 Q80,20 90,10 L85,40 Q70,50 60,80 Z"></path>
+                    <circle cx="75" cy="25" r="2" fill="red"/>
+                </svg>
+            </div>
+            <h1 class="festive-font text-5xl md:text-7xl mb-4 tracking-tighter">2026 丙午馬年</h1>
+            <p class="text-2xl text-[#FFD700] opacity-90 festive-font mb-10">開運大抽獎．好運「馬」上到</p>
+            <button class="entry-button festive-font" onclick="startApp()">
+                點擊開啟馬年好運 🧧
+            </button>
+        </div>
+        <p class="absolute bottom-10 opacity-60 text-sm">點擊按鈕後將開始播放節慶背景音樂</p>
+    </div>
+
+    <!-- BGM Audio Element -->
+    <audio id="bgm" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2026/01/14/audio_3265c1aace.mp3?filename=viacheslavstarostin-chinese-lunar-new-year-465871.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- SFX Elements -->
+    <audio id="sfx-click" preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2022/03/24/audio_30dda4adf4.mp3?filename=freesound_community-paper-plane-blow-100032.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sfx-open" preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2022/03/17/audio_ac64c14ad7.mp3?filename=freesound_community-papercrackle1-94430.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sfx-success" preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2025/11/19/audio_653dfff9ab.mp3?filename=dragon-studio-festive-chime-439612.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sfx-reset" preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2025/08/02/audio_e87ddb7db2.mp3?filename=virtual_vibes-minimal-ui-pop-383735.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Music Toggle Button -->
+    <button id="music-toggle" onclick="toggleMusic()">
+        <svg id="music-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+        </svg>
+    </button>
+
+    <!-- Decorative Lanterns -->
+    <img src="https://img.icons8.com/color/96/chinese-lantern.png" class="bg-lantern" style="left: 5%;" alt="Lantern">
+    <img src="https://img.icons8.com/color/96/chinese-lantern.png" class="bg-lantern" style="right: 5%;" alt="Lantern">
+
+    <header class="text-center mb-10 px-4 relative z-10">
+        <h1 class="festive-font text-5xl md:text-6xl mb-4 tracking-widest drop-shadow-lg">
+            丙午馬年．開運大抽獎
+        </h1>
+        <p class="text-xl text-white opacity-90">這裡有 32 個福氣紅包，選一個開啟您的一年好運！</p>
+    </header>
+
+    <!-- 32 Envelopes Grid -->
+    <div id="grid-container" class="envelope-grid relative z-10">
+        <!-- JS generates 32 items -->
+    </div>
+
+    <!-- Animation Stage -->
+    <div id="stage-overlay">
+        <div id="big-envelope-wrapper" class="big-envelope">
+            <div class="flap">
+                <div class="w-12 h-12 rounded-full border-2 border-[#FFD700] flex items-center justify-center text-[#FFD700] font-bold bg-[#D40000]">福</div>
+            </div>
+            <div class="greeting-card">
+                <div class="text-sm font-bold text-gray-500 mb-2">2026 馬年大吉</div>
+                <div id="result-text" class="text-3xl font-bold festive-font mb-6 leading-relaxed">
+                    吉祥話載入中...
+                </div>
+                <div class="w-16 h-1 w-full bg-red-200 mb-6"></div>
+                <button onclick="resetGame()" class="bg-[#D40000] text-white px-6 py-2 rounded-full font-bold hover:bg-black transition-all">
+                    收下祝福
+                </button>
+            </div>
+            <div class="absolute bottom-0 left-0 w-full h-1/2 bg-[#D40000] border-2 border-[#FFD700] rounded-b-lg z-10 flex items-center justify-center">
+                <span class="text-gold opacity-20 text-4xl">🐎</span>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-20 text-gold opacity-60 text-sm text-center">
+        <p>© 2026 丙午年 · 電機科導師祝您馬到成功</p>
+    </footer>
+
+    <script>
+        const greetings = [
+            "龍馬精神", "馬到成功", "一馬當先", "萬馬奔騰", "天馬行空",
+            "老馬識途", "策馬入林", "汗馬功勞", "千里之志", "駟馬高門",
+            "「馬」上有錢", "「馬」上有福", "「馬」上封侯", "「馬」上脫單", "「馬」上成家",
+            "幸福「馬」拉松", "「馬」到福到", "快「馬」加鞭", "龍馬「舞」春", "馬力十足",
+            "「碼」到成功", "馬力全開，電控未來", "天馬行空，Canvas 精彩", "Gemini 助力，馬不停蹄", "步履不停，晉升 Innovator",
+            "龍馬精神，科科及格", "馬上有靈感，GAS 跑不完", "職涯奔騰，教學如魚得水", "輸出最強，電路不短路", "馬年轉乾坤，教學新氣象",
+            "躍馬迎春，富貴盈門", "神采駿馬，好運連發"
+        ];
+
+        const bgm = document.getElementById('bgm');
+        const sfxClick = document.getElementById('sfx-click');
+        const sfxOpen = document.getElementById('sfx-open');
+        const sfxSuccess = document.getElementById('sfx-success');
+        const sfxReset = document.getElementById('sfx-reset');
+        
+        let bgmStarted = false;
+        let wasPlayingBeforeHidden = false; // 紀錄隱藏前的播放狀態
+
+        // Initialize 32 Envelopes
+        const grid = document.getElementById('grid-container');
+        for (let i = 0; i < 32; i++) {
+            const el = document.createElement('div');
+            el.className = 'envelope-item';
+            el.innerHTML = `
+                <div class="absolute inset-0 opacity-10 flex items-center justify-center pointer-events-none">
+                    <svg width="60" height="60" viewBox="0 0 100 100" fill="gold"><path d="M20,80 Q30,40 60,30 Q80,20 90,10 L85,40 Q70,50 60,80 Z"></path></svg>
+                </div>
+                <div class="seal">福</div>
+            `;
+            el.onclick = () => openRedEnvelope();
+            grid.appendChild(el);
+        }
+
+        // ENTRY SCREEN LOGIC
+        function startApp() {
+            const entryScreen = document.getElementById('entry-screen');
+            
+            // 1. Play Music
+            bgm.play().catch(e => console.log("BGM play prevented:", e));
+            bgmStarted = true;
+            updateMusicIcon();
+            
+            // 2. Play Click SFX
+            sfxClick.currentTime = 0;
+            sfxClick.play();
+
+            // 3. Hide Entry Screen
+            entryScreen.style.opacity = '0';
+            setTimeout(() => {
+                entryScreen.style.visibility = 'hidden';
+            }, 800);
+        }
+
+        // 監聽網頁可見性變化 (Visibility Change)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                // 如果網頁隱藏，紀錄當前是否在播放音樂並暫停
+                wasPlayingBeforeHidden = !bgm.paused;
+                if (wasPlayingBeforeHidden) {
+                    bgm.pause();
+                }
+            } else {
+                // 如果網頁重新顯示，且隱藏前是在播放狀態，則恢復播放
+                if (wasPlayingBeforeHidden && bgmStarted) {
+                    bgm.play().catch(e => console.log("Resume failed:", e));
+                }
+            }
+            updateMusicIcon(); // 同步更新圖示
+        });
+
+        function openRedEnvelope() {
+            if (!bgmStarted) {
+                bgm.play().catch(e => console.log("BGM play prevented:", e));
+                bgmStarted = true;
+                updateMusicIcon();
+            }
+
+            sfxClick.currentTime = 0;
+            sfxClick.play();
+
+            const overlay = document.getElementById('stage-overlay');
+            const envelope = document.getElementById('big-envelope-wrapper');
+            const resultText = document.getElementById('result-text');
+            
+            const pick = greetings[Math.floor(Math.random() * greetings.length)];
+            resultText.innerText = pick;
+
+            overlay.style.display = 'flex';
+            
+            setTimeout(() => {
+                sfxOpen.currentTime = 0;
+                sfxOpen.play();
+                
+                envelope.classList.add('open');
+                createConfetti();
+                
+                setTimeout(() => {
+                    sfxSuccess.currentTime = 0;
+                    sfxSuccess.play();
+                }, 400);
+            }, 100);
+        }
+
+        function resetGame() {
+            sfxReset.currentTime = 0;
+            sfxReset.play();
+
+            const overlay = document.getElementById('stage-overlay');
+            const envelope = document.getElementById('big-envelope-wrapper');
+            
+            envelope.classList.remove('open');
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 500);
+        }
+
+        function toggleMusic() {
+            if (bgm.paused) {
+                bgm.play().catch(e => console.log("Toggle play failed:", e));
+            } else {
+                bgm.pause();
+            }
+            updateMusicIcon();
+        }
+
+        function updateMusicIcon() {
+            const icon = document.getElementById('music-icon');
+            if (bgm.paused) {
+                // 暫停圖示
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />';
+            } else {
+                // 播放圖示
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />';
+            }
+        }
+
+        function createConfetti() {
+            const colors = ['#FFD700', '#FFFFFF', '#FF4D4D', '#FFF8E1'];
+            for (let i = 0; i < 50; i++) {
+                const div = document.createElement('div');
+                div.style.position = 'fixed';
+                div.style.left = '50vw';
+                div.style.top = '50vh';
+                div.style.width = '10px';
+                div.style.height = '10px';
+                div.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                div.style.zIndex = '200';
+                div.style.pointerEvents = 'none';
+                document.body.appendChild(div);
+
+                const angle = Math.random() * Math.PI * 2;
+                const tx = Math.cos(angle) * (100 + Math.random() * 200);
+                const ty = Math.sin(angle) * (100 + Math.random() * 200);
+
+                const animation = div.animate([
+                    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 1000 + Math.random() * 1000,
+                    easing: 'cubic-bezier(0.16, 1, 0.3, 1)'
+                });
+
+                animation.onfinish = () => div.remove();
+            }
+        }
+    </script>
+</body>
+</html>
